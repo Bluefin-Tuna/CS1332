@@ -51,7 +51,6 @@ public class ArrayList<T> {
     public void addAtIndex(int index, T data) {
         if (index < 0 || index > this.size) { throw new IndexOutOfBoundsException("Index is Out of the Bounds of the ArrayList."); }
         if(data == null) { throw new IllegalArgumentException("Data is null and is not allowed inside ArrayList"); }
-        
         if(index == 0) {
             addToFront(data);
             return;
@@ -67,6 +66,7 @@ public class ArrayList<T> {
         }
         this.backingArray[index] = data;
         this.size += 1;
+        System.out.println(this.backingArray);
     }
 
     /**
@@ -127,8 +127,8 @@ public class ArrayList<T> {
             return removeFromBack();
         }
         T d = this.backingArray[index];
-        for(int i = index; i < this.size - 1; i++) {
-            this.backingArray[i] = this.backingArray[i + 1];
+        for(int i = size - 1; i > index; i--) {
+            this.backingArray[i - 1] = this.backingArray[i];
         }
         this.size -= 1;
         return d;
@@ -250,5 +250,9 @@ public class ArrayList<T> {
             t[i] = this.backingArray[i];
         }
         this.backingArray = t;
+    }
+
+    public void print() {
+        System.out.println(this.backingArray);
     }
 }
