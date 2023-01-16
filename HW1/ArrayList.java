@@ -8,9 +8,9 @@ import java.util.NoSuchElementException;
  * @userid tchopra32
  * @GTID 903785867
  *
- * Collaborators: LIST ALL COLLABORATORS YOU WORKED WITH HERE
+ * Collaborators: None
  *
- * Resources: LIST ALL NON-COURSE RESOURCES YOU CONSULTED HERE
+ * Resources: None
  */
 public class ArrayList<T> {
 
@@ -49,24 +49,30 @@ public class ArrayList<T> {
      * @throws java.lang.IllegalArgumentException  if data is null
      */
     public void addAtIndex(int index, T data) {
-        if (index < 0 || index > this.size) { throw new IndexOutOfBoundsException("Index is Out of the Bounds of the ArrayList."); }
-        if(data == null) { throw new IllegalArgumentException("Data is null and is not allowed inside ArrayList"); }
-        if(index == 0) {
+        if (index < 0 || index > this.size) {
+            throw new IndexOutOfBoundsException(
+                String.format("%d-th index of the ArrayList is out of the bounds of the ArrayList is %d to %d",
+                        index, 0, this.size - 1)
+            );
+        }
+        if (data == null) {
+            throw new IllegalArgumentException("Data is null which is not storable inside an ArrayList.");
+        }
+        if (index == 0) {
             addToFront(data);
             return;
         } else if (index == this.size) {
             addToBack(data);
             return;
         }
-        if(checkResizeNeed(this.size += 1)) {
+        if (checkResizeNeed(this.size + 1)) {
             resizeArray();
         }
-        for(int i = index; i < this.size - 1; i++) {
-            this.backingArray[i + 1] = this.backingArray[i];
+        for (int i = size; i > index; i--) {
+            this.backingArray[i] = this.backingArray[i - 1];
         }
         this.backingArray[index] = data;
         this.size += 1;
-        System.out.println(this.backingArray);
     }
 
     /**
@@ -80,12 +86,14 @@ public class ArrayList<T> {
      * @throws java.lang.IllegalArgumentException if data is null
      */
     public void addToFront(T data) {
-        if(data == null) { throw new IllegalArgumentException("Data is null and is not allowed inside ArrayList"); }
-        if(checkResizeNeed(this.size + 1)) {
+        if (data == null) {
+            throw new IllegalArgumentException("Data is null which is not storable inside an ArrayList.");
+        }
+        if (checkResizeNeed(this.size + 1)) {
             resizeArray();
         }
-        for(int i = 0; i < this.size - 1; i ++) {
-            this.backingArray[i + 1] = this.backingArray[i];
+        for (int i = size; i > 0; i--) {
+            this.backingArray[i] = this.backingArray[i - 1];
         }
         this.backingArray[0] = data;
         this.size += 1;
@@ -100,8 +108,10 @@ public class ArrayList<T> {
      * @throws java.lang.IllegalArgumentException if data is null
      */
     public void addToBack(T data) {
-        if(data == null) { throw new IllegalArgumentException("Data is null and is not allowed inside ArrayList"); }
-        if(checkResizeNeed(this.size + 1)) {
+        if (data == null) {
+            throw new IllegalArgumentException("Data is null which is not storable inside an ArrayList.");
+        }
+        if (checkResizeNeed(this.size + 1)) {
             resizeArray();
         }
         this.backingArray[this.size] = data;
@@ -120,16 +130,22 @@ public class ArrayList<T> {
      * @throws java.lang.IndexOutOfBoundsException if index < 0 or index >= size
      */
     public T removeAtIndex(int index) {
-        if (index < 0 || index >= this.size) { throw new IndexOutOfBoundsException("Index is Out of the Bounds of the ArrayList."); }
-        if(index == 0){
+        if (index < 0 || index >= this.size) {
+            throw new IndexOutOfBoundsException(
+                String.format("%d-th index of the ArrayList is out of the bounds of the ArrayList is %d to %d",
+                        index, 0, this.size - 1)
+            );
+        }
+        if (index == 0) {
             return removeFromFront();
         } else if (index == this.size - 1) {
             return removeFromBack();
         }
         T d = this.backingArray[index];
-        for(int i = size - 1; i > index; i--) {
-            this.backingArray[i - 1] = this.backingArray[i];
+        for (int i = index; i < size - 1; i++) {
+            this.backingArray[i] = this.backingArray[i + 1];
         }
+        this.backingArray[size - 1] = null;
         this.size -= 1;
         return d;
     }
@@ -145,11 +161,14 @@ public class ArrayList<T> {
      * @throws java.util.NoSuchElementException if the list is empty
      */
     public T removeFromFront() {
-        if(isEmpty()) { throw new NoSuchElementException("List is empty."); }
+        if (isEmpty()) {
+            throw new NoSuchElementException("ArrayList has no data stored inside it.");
+        }
         T d = this.backingArray[0];
-        for(int i = 0; i < this.size - 1; i++) {
+        for (int i = 0; i < this.size - 1; i++) {
             this.backingArray[i] = this.backingArray[i + 1];
         }
+        this.backingArray[size - 1] = null;
         this.size -= 1;
         return d;
     }
@@ -179,8 +198,11 @@ public class ArrayList<T> {
      * @throws java.lang.IndexOutOfBoundsException if index < 0 or index >= size
      */
     public T get(int index) {
-        if(index < 0 || index >= this.size) {
-            throw new IndexOutOfBoundsException("Index is out of the bounds of the ArrayList.");
+        if (index < 0 || index >= this.size) {
+            throw new IndexOutOfBoundsException(
+                String.format("%d-th index of the ArrayList is out of the bounds of the ArrayList is %d to %d",
+                        index, 0, this.size - 1)
+            );
         }
         return this.backingArray[index];
     }
@@ -193,7 +215,7 @@ public class ArrayList<T> {
      * @return true if empty, false otherwise
      */
     public boolean isEmpty() {
-        if(this.size == 0) {
+        if (this.size == 0) {
             return true;
         }
         return false;
@@ -208,7 +230,7 @@ public class ArrayList<T> {
      * Must be O(1).
      */
     public void clear() {
-        this.backingArray = (T[])(new Object[this.backingArray.length]);
+        this.backingArray = (T[]) (new Object[this.backingArray.length]);
         this.size = 0;
     }
 
@@ -238,21 +260,27 @@ public class ArrayList<T> {
         return size;
     }
 
+    /**
+     * Returns a boolean representing if the backingArray needs to be resized.
+     *
+     * @param projSize int representing the future size after an operation is performed.
+     * @return boolean representing if the backingArray needs to be resized.
+     */
     private boolean checkResizeNeed(int projSize) {
-        if(projSize > this.backingArray.length) {
+        if (projSize > this.backingArray.length) {
             return true;
         }
         return false;
     }
+
+    /**
+     * Mutating opreation for resizingArray.
+     */
     private void resizeArray() {
-        T[] t = (T[])(new Object[this.backingArray.length * 2]);
-        for(int i = 0; i < this.backingArray.length; i++) {
+        T[] t = (T[]) (new Object[this.backingArray.length * 2]);
+        for (int i = 0; i < this.backingArray.length; i++) {
             t[i] = this.backingArray[i];
         }
         this.backingArray = t;
-    }
-
-    public void print() {
-        System.out.println(this.backingArray);
     }
 }
