@@ -182,8 +182,11 @@ public class ArrayList<T> {
      * @throws java.util.NoSuchElementException if the list is empty
      */
     public T removeFromBack() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("ArrayList has no data stored inside it.");
+        }
         T d = this.backingArray[this.size - 1];
-        this.backingArray[this.size - 1] = this.backingArray[this.size];
+        this.backingArray[this.size - 1] = null;
         this.size -= 1;
         return d;
     }
