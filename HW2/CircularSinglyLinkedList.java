@@ -144,7 +144,8 @@ public class CircularSinglyLinkedList<T> {
             return d;
         }
         T d = this.head.getData();
-        this.head = this.head.getNext();
+        this.head.setData(this.head.getNext().getData());
+        this.head.setNext(this.head.getNext().getNext());
         this.size -= 1;
         return d;
     }
@@ -221,7 +222,33 @@ public class CircularSinglyLinkedList<T> {
      * @throws java.util.NoSuchElementException   if data is not found
      */
     public T removeLastOccurrence(T data) {
-        return null;
+        if(data == null) { throw new IllegalArgumentException(); }
+        if(isEmpty()) { throw new NoSuchElementException(); }
+        if (this.size == 1) {
+            if(!this.head.getData().equals(data)) {
+                throw new NoSuchElementException();
+            }
+            T d = this.head.getData();
+            this.head = null;
+            this.size -= 1;
+            return d;
+        }
+        CircularSinglyLinkedListNode<T> s = null;
+        CircularSinglyLinkedListNode<T> n = this.head;
+        while(n.getNext() != this.head) {
+            n = n.getNext();
+            if(n.getData().equals(data)) {
+                s = n;
+            }
+        }
+        if(s == null) {
+            throw new NoSuchElementException(); 
+        }
+        T d = s.getData();
+        s.setData(s.getNext().getData());
+        s.setNext(s.getNext().getNext());
+        this.size -= 1;
+        return d;
     }
 
     /**
