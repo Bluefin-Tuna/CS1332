@@ -35,8 +35,15 @@ public class CircularSinglyLinkedList<T> {
      * @throws java.lang.IllegalArgumentException  if data is null
      */
     public void addAtIndex(int index, T data) {
-        if (index < 0 || index > size) { throw new IndexOutOfBoundsException(); }
-        if (data == null) { throw new IllegalArgumentException(); }
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException(
+                String.format("%d-th index of the CSLL is out of the bounds of the ArrayList is %d to %d",
+                        index, 0, this.size)
+            );
+        }
+        if (data == null) {
+            throw new IllegalArgumentException("Data is null which is not storable inside an CSLL.");
+        }
         if (index == 0) {
             addToFront(data);
             return;
@@ -63,13 +70,17 @@ public class CircularSinglyLinkedList<T> {
      * @throws java.lang.IllegalArgumentException if data is null
      */
     public void addToFront(T data) {
-        if (data == null) { throw new IllegalArgumentException(); }
+        if (data == null) {
+            throw new IllegalArgumentException("Data is null which is not storable inside an CSLL.");
+        }
         if (this.head == null) {
             this.head = new CircularSinglyLinkedListNode<T>(data);
             this.head.setNext(this.head);
             this.size += 1;
         } else {
-            CircularSinglyLinkedListNode<T> n = new CircularSinglyLinkedListNode<T>(this.head.getData(), this.head.getNext());
+            CircularSinglyLinkedListNode<T> n = new CircularSinglyLinkedListNode<T>(
+                this.head.getData(), this.head.getNext()
+            );
             this.head.setNext(n);
             this.head.setData(data);
             this.size += 1;
@@ -85,17 +96,25 @@ public class CircularSinglyLinkedList<T> {
      * @throws java.lang.IllegalArgumentException if data is null
      */
     public void addToBack(T data) {
-        if (data == null) { throw new IllegalArgumentException(); }
+        if (data == null) {
+            throw new IllegalArgumentException("Data is null which is not storable inside an CSLL.");
+        }
         if (this.head == null) {
             this.head = new CircularSinglyLinkedListNode<T>(data);
-            this.head.setNext(head);
+            this.head.setNext(this.head);
+            this.size += 1;
+        } else if (this.size == 1) {
+            CircularSinglyLinkedListNode<T> n = new CircularSinglyLinkedListNode<T>(data, this.head);
+            this.head.setNext(n);
             this.size += 1;
         } else {
-            CircularSinglyLinkedListNode<T> n = new CircularSinglyLinkedListNode<T>(this.head.getData(), this.head.getNext());
+            CircularSinglyLinkedListNode<T> n = new CircularSinglyLinkedListNode<T>(
+                this.head.getData(), this.head.getNext()
+            );
             this.head.setData(data);
             this.head.setNext(n);
             this.head = n;
-            this.size += 1; 
+            this.size += 1;
         }
     }
 
@@ -109,8 +128,15 @@ public class CircularSinglyLinkedList<T> {
      * @throws java.lang.IndexOutOfBoundsException if index < 0 or index >= size
      */
     public T removeAtIndex(int index) {
-        if (index < 0 || index >= this.size) { throw new IndexOutOfBoundsException(); }
-        if (index == 0) { return removeFromFront(); }
+        if (index < 0 || index >= this.size) {
+            throw new IndexOutOfBoundsException(
+                String.format("%d-th index of the CSLL is out of the bounds of the ArrayList is %d to %d",
+                        index, 0, this.size - 1)
+            );
+        }
+        if (index == 0) {
+            return removeFromFront();
+        }
         if (this.head.getNext() == this.head) {
             T d = this.head.getData();
             this.head = null;
@@ -118,7 +144,7 @@ public class CircularSinglyLinkedList<T> {
             return d;
         }
         CircularSinglyLinkedListNode<T> n = this.head;
-        for(int i = 1; i < index; i++) {
+        for (int i = 1; i < index; i++) {
             n = n.getNext();
         }
         T d = n.getNext().getData();
@@ -136,7 +162,9 @@ public class CircularSinglyLinkedList<T> {
      * @throws java.util.NoSuchElementException if the list is empty
      */
     public T removeFromFront() {
-        if (this.head == null) { throw new NoSuchElementException(); }
+        if (this.head == null) {
+            throw new NoSuchElementException("CSLL is empty so there is no node to remove.");
+        }
         if (this.head.getNext() == this.head) {
             T d = this.head.getData();
             this.head = null;
@@ -159,7 +187,9 @@ public class CircularSinglyLinkedList<T> {
      * @throws java.util.NoSuchElementException if the list is empty
      */
     public T removeFromBack() {
-        if (this.head == null) { throw new NoSuchElementException(); }
+        if (this.head == null) {
+            throw new NoSuchElementException("CSLL is empty so there is no node to remove.");
+        }
         return removeAtIndex(this.size - 1);
     }
 
@@ -173,7 +203,12 @@ public class CircularSinglyLinkedList<T> {
      * @throws java.lang.IndexOutOfBoundsException if index < 0 or index >= size
      */
     public T get(int index) {
-        if (index < 0 || index >= this.size) { throw new IndexOutOfBoundsException(); }
+        if (index < 0 || index >= this.size) {
+            throw new IndexOutOfBoundsException(
+                String.format("%d-th index of the CSLL is out of the bounds of the ArrayList is %d to %d",
+                        index, 0, this.size - 1)
+            );
+        }
         if (index == 0) {
             return this.head.getData();
         } else {
@@ -222,27 +257,25 @@ public class CircularSinglyLinkedList<T> {
      * @throws java.util.NoSuchElementException   if data is not found
      */
     public T removeLastOccurrence(T data) {
-        if(data == null) { throw new IllegalArgumentException(); }
-        if(isEmpty()) { throw new NoSuchElementException(); }
-        if (this.size == 1) {
-            if(!this.head.getData().equals(data)) {
-                throw new NoSuchElementException();
-            }
-            T d = this.head.getData();
-            this.head = null;
-            this.size -= 1;
-            return d;
+        if (data == null) {
+            throw new IllegalArgumentException("Data is null which is not storable inside an CSLL.");
         }
-        CircularSinglyLinkedListNode<T> s = null;
+        if (isEmpty()) {
+            throw new NoSuchElementException(data + " was not found inside this CSLL.");
+        }
+        if (this.head.getData().equals(data) && this.head.getNext() == this.head) {
+            return removeFromFront();
+        }
+        CircularSinglyLinkedListNode<T> s = this.head.getData().equals(data) ? this.head : null;
         CircularSinglyLinkedListNode<T> n = this.head;
-        while(n.getNext() != this.head) {
+        while (n.getNext() != this.head) {
             n = n.getNext();
-            if(n.getData().equals(data)) {
+            if (n.getData().equals(data)) {
                 s = n;
             }
         }
-        if(s == null) {
-            throw new NoSuchElementException(); 
+        if (s == null) {
+            throw new NoSuchElementException(data + " was not found inside this CSLL.");
         }
         T d = s.getData();
         s.setData(s.getNext().getData());
@@ -262,7 +295,7 @@ public class CircularSinglyLinkedList<T> {
     public T[] toArray() {
         T[] arr = (T[]) new Object[this.size];
         CircularSinglyLinkedListNode<T> n = this.head;
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             arr[i] = n.getData();
             n = n.getNext();
         }
@@ -293,14 +326,5 @@ public class CircularSinglyLinkedList<T> {
     public int size() {
         // DO NOT MODIFY!
         return size;
-    }
-
-    public void print() {
-        CircularSinglyLinkedListNode<T> n = this.head;
-        for(int i = 0; i < this.size - 1; i++) {
-            System.out.print(n.getData() + " ");
-            n = n.getNext();
-        }
-        System.out.println(n.getData());
     }
 }
