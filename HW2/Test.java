@@ -12,5 +12,7 @@ public class Test {
         // list.addToBack("3a");
         // list.addToBack("0a");
         // System.out.println(list.get(5) + list.removeLastOccurrence("0a"));
+
+        int j = 1 > 0 ? 1: 0;
     }
 }
