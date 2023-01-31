@@ -1,14 +1,16 @@
+import java.util.NoSuchElementException;
+
 /**
  * Your implementation of a LinkedQueue. It should NOT be circular.
  *
- * @author YOUR NAME HERE
+ * @author Tanush Chopra
  * @version 1.0
- * @userid YOUR USER ID HERE (i.e. gburdell3)
- * @GTID YOUR GT ID HERE (i.e. 900000000)
+ * @userid tchopra32
+ * @GTID 903785867
  *
- * Collaborators: LIST ALL COLLABORATORS YOU WORKED WITH HERE
+ * Collaborators: N/A
  *
- * Resources: LIST ALL NON-COURSE RESOURCES YOU CONSULTED HERE
+ * Resources: N/A
  */
 public class LinkedQueue<T> {
 
@@ -32,7 +34,17 @@ public class LinkedQueue<T> {
      * @throws java.lang.IllegalArgumentException if data is null
      */
     public void enqueue(T data) {
-
+        if (data == null) {
+            throw new IllegalArgumentException("Data is null which you cannot store inside an LinkedQueue.");
+        }
+        this.size += 1;
+        if (isEmpty()) {
+            this.tail = new LinkedNode<T>(data);
+            this.head = this.tail;
+            return;
+        }
+        this.tail.setNext(new LinkedNode<T>(data));
+        this.tail = this.tail.getNext();
     }
 
     /**
@@ -44,7 +56,19 @@ public class LinkedQueue<T> {
      * @throws java.util.NoSuchElementException if the queue is empty
      */
     public T dequeue() {
-
+        if (isEmpty()) {
+            throw new NoSuchElementException("LinkedQueue is empty. There are no elements to dequeue.");
+        }
+        this.size -= 1;
+        if (this.size == 0) {
+            T d = this.head.getData();
+            this.head = null;
+            this.tail = null;
+            return d;
+        }
+        T d = this.head.getData();
+        this.head = this.head.getNext();
+        return d;
     }
 
     /**
@@ -56,7 +80,10 @@ public class LinkedQueue<T> {
      * @throws java.util.NoSuchElementException if the queue is empty
      */
     public T peek() {
-
+        if (isEmpty()) {
+            throw new NoSuchElementException("LinkedQueue is empty. There are no elements to peek.");
+        }
+        return this.head.getData();
     }
 
     /**
@@ -96,5 +123,14 @@ public class LinkedQueue<T> {
     public int size() {
         // DO NOT MODIFY THIS METHOD!
         return size;
+    }
+
+    /**
+     * Returns whether the LinkedQueue is empty of not.
+     *
+     * @return boolean representing whether empty or not
+     */
+    private boolean isEmpty() {
+        return this.size == 0 || (this.tail == null && this.head == null);
     }
 }

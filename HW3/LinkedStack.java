@@ -1,14 +1,16 @@
+import java.util.NoSuchElementException;
+
 /**
  * Your implementation of a LinkedStack. It should NOT be circular.
  *
- * @author YOUR NAME HERE
+ * @author Tanush Chopra
  * @version 1.0
- * @userid YOUR USER ID HERE (i.e. gburdell3)
- * @GTID YOUR GT ID HERE (i.e. 900000000)
+ * @userid tchopra32
+ * @GTID 903785867
  *
- * Collaborators: LIST ALL COLLABORATORS YOU WORKED WITH HERE
+ * Collaborators: N/A
  *
- * Resources: LIST ALL NON-COURSE RESOURCES YOU CONSULTED HERE
+ * Resources: N/A
  */
 public class LinkedStack<T> {
 
@@ -31,7 +33,11 @@ public class LinkedStack<T> {
      * @throws java.lang.IllegalArgumentException if data is null
      */
     public void push(T data) {
-
+        if (data == null) {
+            throw new IllegalArgumentException("Data is null which you cannot store inside an LinkedStack.");
+        }
+        this.head = new LinkedNode<T>(data, this.head);
+        this.size += 1;
     }
 
     /**
@@ -43,7 +49,13 @@ public class LinkedStack<T> {
      * @throws java.util.NoSuchElementException if the stack is empty
      */
     public T pop() {
-
+        if (isEmpty()) {
+            throw new NoSuchElementException("LinkedStack is empty. There are no elements to pop.");
+        }
+        T d = this.head.getData();
+        this.head = this.head.getNext();
+        this.size -= 1;
+        return d;
     }
 
     /**
@@ -55,7 +67,10 @@ public class LinkedStack<T> {
      * @throws java.util.NoSuchElementException if the stack is empty
      */
     public T peek() {
-
+        if (isEmpty()) {
+            throw new NoSuchElementException("LinkedStack is empty. There are no elements to peek.");
+        }
+        return this.head.getData();
     }
 
     /**
@@ -82,5 +97,14 @@ public class LinkedStack<T> {
     public int size() {
         // DO NOT MODIFY THIS METHOD!
         return size;
+    }
+
+    /**
+     * Returns whether the LinkedStack is empty of not.
+     *
+     * @return boolean representing whether empty or not
+     */
+    private boolean isEmpty() {
+        return this.size == 0 || this.head == null;
     }
 }

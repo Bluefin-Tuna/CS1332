@@ -1,14 +1,16 @@
+import java.util.NoSuchElementException;
+
 /**
  * Your implementation of an ArrayStack.
  *
- * @author YOUR NAME HERE
+ * @author Tanush Chopra
  * @version 1.0
- * @userid YOUR USER ID HERE (i.e. gburdell3)
- * @GTID YOUR GT ID HERE (i.e. 900000000)
+ * @userid tchopra32
+ * @GTID 903785867
  *
- * Collaborators: LIST ALL COLLABORATORS YOU WORKED WITH HERE
+ * Collaborators: N/A
  *
- * Resources: LIST ALL NON-COURSE RESOURCES YOU CONSULTED HERE
+ * Resources: N/A
  */
 public class ArrayStack<T> {
 
@@ -29,7 +31,7 @@ public class ArrayStack<T> {
      * Constructs a new ArrayStack.
      */
     public ArrayStack() {
-
+        this.backingArray = (T[]) (new Object[ArrayStack.INITIAL_CAPACITY]);
     }
 
     /**
@@ -44,7 +46,17 @@ public class ArrayStack<T> {
      * @throws java.lang.IllegalArgumentException if data is null
      */
     public void push(T data) {
-
+        if (data == null) {
+            throw new IllegalArgumentException("Data is null which you cannot store inside an ArrayStack.");
+        }
+        if (++this.size > this.backingArray.length) {
+            T[] a = (T[]) (new Object[2 * this.backingArray.length]);
+            for (int i = 0; i < this.backingArray.length; ++i) {
+                a[i] = this.backingArray[i];
+            }
+            this.backingArray = a;
+        }
+        this.backingArray[this.size - 1] = data;
     }
 
     /**
@@ -60,7 +72,12 @@ public class ArrayStack<T> {
      * @throws java.util.NoSuchElementException if the stack is empty
      */
     public T pop() {
-
+        if (isEmpty()) {
+            throw new NoSuchElementException("ArrayStack is empty. There are no elements to pop.");
+        }
+        T d = this.backingArray[--this.size];
+        this.backingArray[this.size] = null;
+        return d;
     }
 
     /**
@@ -72,7 +89,10 @@ public class ArrayStack<T> {
      * @throws java.util.NoSuchElementException if the stack is empty
      */
     public T peek() {
-
+        if (isEmpty()) {
+            throw new NoSuchElementException("ArrayStack is empty. There are no elements to peek.");
+        }
+        return this.backingArray[this.size - 1];
     }
 
     /**
@@ -99,5 +119,14 @@ public class ArrayStack<T> {
     public int size() {
         // DO NOT MODIFY THIS METHOD!
         return size;
+    }
+
+    /**
+     * Returns whether the ArrayStack is empty of not.
+     *
+     * @return boolean representing whether empty or not
+     */
+    private boolean isEmpty() {
+        return this.size == 0;
     }
 }

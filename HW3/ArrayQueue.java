@@ -1,3 +1,5 @@
+import java.util.NoSuchElementException;
+
 /**
  * Your implementation of an ArrayQueue.
  *
@@ -6,9 +8,9 @@
  * @userid tchopra32
  * @GTID 903785867
  *
- * Collaborators: LIST ALL COLLABORATORS YOU WORKED WITH HERE
+ * Collaborators: N/A
  *
- * Resources: LIST ALL NON-COURSE RESOURCES YOU CONSULTED HERE
+ * Resources: N/A
  */
 public class ArrayQueue<T> {
 
@@ -30,7 +32,7 @@ public class ArrayQueue<T> {
      * Constructs a new ArrayQueue.
      */
     public ArrayQueue() {
-
+        this.backingArray = (T[]) (new Object[ArrayQueue.INITIAL_CAPACITY]);
     }
 
     /**
@@ -46,7 +48,18 @@ public class ArrayQueue<T> {
      * @throws java.lang.IllegalArgumentException if data is null
      */
     public void enqueue(T data) {
-        
+        if (data == null) {
+            throw new IllegalArgumentException("Data is null which you cannot store inside an ArrayQueue.");
+        }
+        if (++this.size > this.backingArray.length) {
+            T[] a = (T[]) (new Object[2 * this.backingArray.length]);
+            for (int i = this.front; i < this.front + this.backingArray.length; ++i) {
+                a[i - this.front] = this.backingArray[i % this.backingArray.length];
+            }
+            this.backingArray = a;
+            this.front = 0;
+        }
+        this.backingArray[(this.front + this.size - 1) % this.backingArray.length] = data;
     }
 
     /**
@@ -65,7 +78,14 @@ public class ArrayQueue<T> {
      * @throws java.util.NoSuchElementException if the queue is empty
      */
     public T dequeue() {
-
+        if (isEmpty()) {
+            throw new NoSuchElementException("ArrayQueue is empty. There are no elements to dequeue.");
+        }
+        T d = this.backingArray[this.front];
+        this.backingArray[this.front++] = null;
+        this.front %= this.backingArray.length;
+        this.size -= 1;
+        return d;
     }
 
     /**
@@ -77,7 +97,10 @@ public class ArrayQueue<T> {
      * @throws java.util.NoSuchElementException if the queue is empty
      */
     public T peek() {
-
+        if (isEmpty()) {
+            throw new NoSuchElementException("ArrayQueue is empty. There are no elements to peek.");
+        }
+        return this.backingArray[this.front];
     }
 
     /**
@@ -117,5 +140,14 @@ public class ArrayQueue<T> {
     public int size() {
         // DO NOT MODIFY THIS METHOD!
         return size;
+    }
+
+    /**
+     * Returns whether the ArrayQueue is empty of not.
+     *
+     * @return boolean representing whether empty or not
+     */
+    private boolean isEmpty() {
+        return this.size == 0;
     }
 }
