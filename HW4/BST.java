@@ -1,5 +1,9 @@
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Queue;
 
 /**
  * Your implementation of a BST.
@@ -74,6 +78,11 @@ public class BST<T extends Comparable<? super T>> {
      */
     public void add(T data) {
         if (data == null) { throw new IllegalArgumentException(); }
+        if (this.root == null) {
+            this.root = new BSTNode<T>(data);
+            ++this.size;
+            return;
+        }
         this.add(data, this.root);
     }
 
@@ -105,7 +114,10 @@ public class BST<T extends Comparable<? super T>> {
      * @throws java.util.NoSuchElementException   if the data is not in the tree
      */
     public T remove(T data) {
-
+        if (data == null) { throw new IllegalArgumentException(); }
+        BSTNode<T> r = new BSTNode<T>(null);
+        this.root = this.remove(data, this.root, r);
+        return r.getData();
     }
 
     /**
@@ -126,7 +138,8 @@ public class BST<T extends Comparable<? super T>> {
      * @throws java.util.NoSuchElementException   if the data is not in the tree
      */
     public T get(T data) {
-
+        if (data == null) { throw new IllegalArgumentException(); }
+        return this.get(data, this.root);
     }
 
     /**
@@ -145,7 +158,13 @@ public class BST<T extends Comparable<? super T>> {
      * @throws java.lang.IllegalArgumentException if data is null
      */
     public boolean contains(T data) {
-
+        if (data == null) { throw new IllegalArgumentException(); }
+        try {
+            this.get(data, this.root);
+            return true;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
     }
 
     /**
@@ -158,7 +177,9 @@ public class BST<T extends Comparable<? super T>> {
      * @return the preorder traversal of the tree
      */
     public List<T> preorder() {
-        
+        List<T> l = new ArrayList<T>(this.size);
+        this.preOrder(this.root, l);
+        return l;
     }
 
     /**
@@ -171,7 +192,9 @@ public class BST<T extends Comparable<? super T>> {
      * @return the inorder traversal of the tree
      */
     public List<T> inorder() {
-
+        List<T> l = new ArrayList<T>(this.size);
+        this.inOrder(this.root, l);
+        return l;
     }
 
     /**
@@ -184,7 +207,9 @@ public class BST<T extends Comparable<? super T>> {
      * @return the postorder traversal of the tree
      */
     public List<T> postorder() {
-
+        List<T> l = new ArrayList<T>(this.size);
+        this.postOrder(this.root, l);
+        return l;
     }
 
     /**
@@ -201,7 +226,16 @@ public class BST<T extends Comparable<? super T>> {
      * @return the level order traversal of the tree
      */
     public List<T> levelorder() {
-
+        List<T> l = new ArrayList<T>(this.size);
+        Queue<BSTNode<T>> q = new LinkedList<BSTNode<T>>();
+        q.add(this.root);
+        while (!q.isEmpty()) {
+            BSTNode<T> n = q.poll();
+            l.add(n.getData());
+            if (n.getLeft() != null) { q.add(n.getLeft()); }
+            if (n.getRight() != null) { q.add(n.getRight()); }
+        }
+        return l;
     }
 
     /**
@@ -217,7 +251,7 @@ public class BST<T extends Comparable<? super T>> {
      * @return the height of the root of the tree, -1 if the tree is empty
      */
     public int height() {
-
+        return this.height(this.root);
     }
 
     /**
@@ -228,7 +262,8 @@ public class BST<T extends Comparable<? super T>> {
      * Must be O(1).
      */
     public void clear() {
-
+        this.root = null;
+        this.size = 0;
     }
 
     /**
@@ -265,7 +300,10 @@ public class BST<T extends Comparable<? super T>> {
      * @throws java.lang.IllegalArgumentException if k < 0 or k > size
      */
     public List<T> kLargest(int k) {
-
+        if (k < 0 || k > this.size) { throw new IllegalArgumentException(); }
+        List<T> l = new ArrayList<T>(k);
+        this.kLargest(root, 1, k, l);
+        return l;
     }
 
 
@@ -296,6 +334,110 @@ public class BST<T extends Comparable<? super T>> {
     }
 
     private void add(T d, BSTNode<T> n) {
-        if (n == null)
+        if (d.compareTo(n.getData()) < 0) {
+            if (n.getLeft() == null) {
+                n.setLeft(new BSTNode<T>(d));
+                ++this.size;
+                return;
+            } else {
+                this.add(d, n.getLeft());
+            }
+        } else if (d.compareTo(n.getData()) > 0) {
+            if (n.getRight() == null) {
+                n.setRight(new BSTNode<T>(d));
+                ++this.size;
+                return;
+            } else {
+                this.add(d, n.getRight());
+            }
+        } else {
+            return;
+        }
+    }
+
+    private T get(T d, BSTNode<T> n) {
+        if (n == null) { throw new NoSuchElementException(); }
+        if (d.compareTo(n.getData()) < 0) {
+            return this.get(d, n.getLeft());
+        } else if (d.compareTo(n.getData()) > 0) {
+            return this.get(d, n.getRight());
+        } else {
+            return n.getData();
+        }
+    }
+
+    private void preOrder(BSTNode<T> n, List<T> l) {
+        if (n == null) { return; }
+        l.add(n.getData());
+        this.preOrder(n.getLeft(), l);
+        this.preOrder(n.getRight(), l);
+    }
+
+    private void inOrder(BSTNode<T> n, List<T> l) {
+        if (n == null) { return; }
+        this.inOrder(n.getLeft(), l);
+        l.add(n.getData());
+        this.inOrder(n.getRight(), l);
+    }
+
+    private void postOrder(BSTNode<T> n, List<T> l) {
+        if (n == null) { return; }
+        this.postOrder(n.getLeft(), l);
+        this.postOrder(n.getRight(), l);
+        l.add(n.getData());
+    }
+
+    private int height(BSTNode<T> n) {
+        if (n == null) { return -1; }
+        return 1 + Math.max(
+            this.height(n.getLeft()),
+            this.height(n.getRight())
+        );
+    }
+
+    private int kLargest(BSTNode<T> n, int c, int k, List<T> l) {
+        if (c >= k || n == null) { 
+            return k;
+        }
+        c = this.kLargest(n.getRight(), c, k, l);
+        if(c < k) {
+            l.add(n.getData());
+            c++;
+            c = this.kLargest(n.getLeft(), c, k, l);
+            return c;
+        } else {
+            return k;
+        }
+    }
+
+    private BSTNode<T> findSuccessor(BSTNode<T> n, BSTNode<T> c) {
+        if (n.getLeft() == null) {
+            c.setData(n.getData());
+            return n.getRight();
+        }
+        n.setLeft(this.findSuccessor(n.getLeft(), c));
+        return n;
+    }
+
+    private BSTNode<T> remove(T d, BSTNode<T> n, BSTNode<T> r) {
+        if (n == null) { throw new NoSuchElementException(); }
+        if (d.compareTo(n.getData()) < 0) {
+            n.setLeft(this.remove(d, n.getLeft(), r));
+        } else if (d.compareTo(n.getData()) > 0) {
+            n.setRight(this.remove(d, n.getRight(), r));
+        } else {
+            r.setData(n.getData());
+            --this.size;
+            if (n.getLeft() == null) {
+                return n.getRight();
+            } else if (n.getRight() == null) {
+                return n.getLeft();
+            } else {
+                BSTNode<T> c = new BSTNode<T>(null);
+                n.setRight(this.findSuccessor(n.getRight(), c));
+                n.setData(c.getData());
+            }
+        }
+        return n;
     }
 }
