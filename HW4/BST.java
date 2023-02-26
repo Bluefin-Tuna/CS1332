@@ -53,9 +53,13 @@ public class BST<T extends Comparable<? super T>> {
      *                                            is null
      */
     public BST(Collection<T> data) {
-        if (data == null) { throw new IllegalArgumentException(); }
+        if (data == null) {
+            throw new IllegalArgumentException();
+        }
         for (T d: data) {
-            if (d == null) { throw new IllegalArgumentException(); }
+            if (d == null) {
+                throw new IllegalArgumentException();
+            }
             this.add(d);
         }
     }
@@ -77,7 +81,9 @@ public class BST<T extends Comparable<? super T>> {
      * @throws java.lang.IllegalArgumentException if data is null
      */
     public void add(T data) {
-        if (data == null) { throw new IllegalArgumentException(); }
+        if (data == null) {
+            throw new IllegalArgumentException();
+        }
         if (this.root == null) {
             this.root = new BSTNode<T>(data);
             ++this.size;
@@ -114,7 +120,9 @@ public class BST<T extends Comparable<? super T>> {
      * @throws java.util.NoSuchElementException   if the data is not in the tree
      */
     public T remove(T data) {
-        if (data == null) { throw new IllegalArgumentException(); }
+        if (data == null) {
+            throw new IllegalArgumentException();
+        }
         BSTNode<T> r = new BSTNode<T>(null);
         this.root = this.remove(data, this.root, r);
         return r.getData();
@@ -138,7 +146,9 @@ public class BST<T extends Comparable<? super T>> {
      * @throws java.util.NoSuchElementException   if the data is not in the tree
      */
     public T get(T data) {
-        if (data == null) { throw new IllegalArgumentException(); }
+        if (data == null) {
+            throw new IllegalArgumentException();
+        }
         return this.get(data, this.root);
     }
 
@@ -158,7 +168,9 @@ public class BST<T extends Comparable<? super T>> {
      * @throws java.lang.IllegalArgumentException if data is null
      */
     public boolean contains(T data) {
-        if (data == null) { throw new IllegalArgumentException(); }
+        if (data == null) {
+            throw new IllegalArgumentException();
+        }
         try {
             this.get(data, this.root);
             return true;
@@ -228,12 +240,19 @@ public class BST<T extends Comparable<? super T>> {
     public List<T> levelorder() {
         List<T> l = new ArrayList<T>(this.size);
         Queue<BSTNode<T>> q = new LinkedList<BSTNode<T>>();
+        if (this.root == null) {
+            return l;
+        }
         q.add(this.root);
         while (!q.isEmpty()) {
             BSTNode<T> n = q.poll();
             l.add(n.getData());
-            if (n.getLeft() != null) { q.add(n.getLeft()); }
-            if (n.getRight() != null) { q.add(n.getRight()); }
+            if (n.getLeft() != null) {
+                q.add(n.getLeft());
+            }
+            if (n.getRight() != null) {
+                q.add(n.getRight());
+            }
         }
         return l;
     }
@@ -300,9 +319,11 @@ public class BST<T extends Comparable<? super T>> {
      * @throws java.lang.IllegalArgumentException if k < 0 or k > size
      */
     public List<T> kLargest(int k) {
-        if (k < 0 || k > this.size) { throw new IllegalArgumentException(); }
-        List<T> l = new ArrayList<T>(k);
-        this.kLargest(root, 1, k, l);
+        if (k < 0 || k > this.size) {
+            throw new IllegalArgumentException();
+        }
+        LinkedList<T> l = new LinkedList<T>();
+        this.kLargest(root, k, l);
         return l;
     }
 
@@ -333,6 +354,12 @@ public class BST<T extends Comparable<? super T>> {
         return size;
     }
 
+    /**
+     * Private helper method for the add method.
+     *
+     * @param d T data representing the data to add
+     * @param n BSTNode to recurse on
+     */
     private void add(T d, BSTNode<T> n) {
         if (d.compareTo(n.getData()) < 0) {
             if (n.getLeft() == null) {
@@ -355,8 +382,17 @@ public class BST<T extends Comparable<? super T>> {
         }
     }
 
+    /**
+     * Private helper method for the get method.
+     *
+     * @param d T data to get from BST
+     * @param n BSTNode to recurse on
+     * @return T data gotten from the node
+     */
     private T get(T d, BSTNode<T> n) {
-        if (n == null) { throw new NoSuchElementException(); }
+        if (n == null) {
+            throw new NoSuchElementException();
+        }
         if (d.compareTo(n.getData()) < 0) {
             return this.get(d, n.getLeft());
         } else if (d.compareTo(n.getData()) > 0) {
@@ -366,50 +402,96 @@ public class BST<T extends Comparable<? super T>> {
         }
     }
 
+    /**
+     * Private helper method for the preorder method.
+     *
+     * @param n BSTNode to recurse on
+     * @param l List to store the data from the BST ordered by preorder traversal
+     */
     private void preOrder(BSTNode<T> n, List<T> l) {
-        if (n == null) { return; }
+        if (n == null) {
+            return;
+        }
         l.add(n.getData());
         this.preOrder(n.getLeft(), l);
         this.preOrder(n.getRight(), l);
     }
 
+    /**
+     * Private helper method for the inorder method.
+     *
+     * @param n BSTNode to recurse on
+     * @param l List to store the data from the BST ordered by inorder traversal
+     */
     private void inOrder(BSTNode<T> n, List<T> l) {
-        if (n == null) { return; }
+        if (n == null) {
+            return;
+        }
         this.inOrder(n.getLeft(), l);
         l.add(n.getData());
         this.inOrder(n.getRight(), l);
     }
 
+    /**
+     * Private helper method for the postorder method.
+     *
+     * @param n BSTNode to recurse on
+     * @param l List to store the data from the BST ordered by postorder traversal
+     */
     private void postOrder(BSTNode<T> n, List<T> l) {
-        if (n == null) { return; }
+        if (n == null) {
+            return;
+        }
         this.postOrder(n.getLeft(), l);
         this.postOrder(n.getRight(), l);
         l.add(n.getData());
     }
 
+    /**
+     * Private helper method for the height method.
+     *
+     * @param n BSTNode to recurse on
+     * @return int representing the height of the BST
+     */
     private int height(BSTNode<T> n) {
-        if (n == null) { return -1; }
+        if (n == null) {
+            return -1;
+        }
         return 1 + Math.max(
             this.height(n.getLeft()),
             this.height(n.getRight())
         );
     }
 
-    private int kLargest(BSTNode<T> n, int c, int k, List<T> l) {
-        if (c >= k || n == null) { 
-            return k;
+    /**
+     * Private helper method for the kLargest method.
+     *
+     * @param n BSTNode to recurse on
+     * @param k int representing the number of nodes of data to retrieve
+     * @param l LinkedList holding the data retrieved
+     */
+    private void kLargest(BSTNode<T> n, int k, LinkedList<T> l) {
+        if (l.size() >= k || n == null) {
+            return;
         }
-        c = this.kLargest(n.getRight(), c, k, l);
-        if(c < k) {
-            l.add(n.getData());
-            c++;
-            c = this.kLargest(n.getLeft(), c, k, l);
-            return c;
-        } else {
-            return k;
+        this.kLargest(n.getRight(), k, l);
+        if (l.size() >= k) {
+            return;
         }
+        l.addFirst(n.getData());
+        if (l.size() >= k) {
+            return;
+        }
+        this.kLargest(n.getLeft(), k, l);
     }
 
+    /**
+     * Private helper method for finding the successor of a node.
+     *
+     * @param n BSTNode to recurse on
+     * @param c BSTNode representing the child
+     * @return BSTNode representing the modified node
+     */
     private BSTNode<T> findSuccessor(BSTNode<T> n, BSTNode<T> c) {
         if (n.getLeft() == null) {
             c.setData(n.getData());
@@ -419,8 +501,18 @@ public class BST<T extends Comparable<? super T>> {
         return n;
     }
 
+    /**
+     * Private helper method for the remove method.
+     *
+     * @param d T data representing the data to remove from the BST
+     * @param n BSTNode to recurse on
+     * @param r BSTNode that has been removed
+     * @return BSTNode with the data removed
+     */
     private BSTNode<T> remove(T d, BSTNode<T> n, BSTNode<T> r) {
-        if (n == null) { throw new NoSuchElementException(); }
+        if (n == null) {
+            throw new NoSuchElementException();
+        }
         if (d.compareTo(n.getData()) < 0) {
             n.setLeft(this.remove(d, n.getLeft(), r));
         } else if (d.compareTo(n.getData()) > 0) {
