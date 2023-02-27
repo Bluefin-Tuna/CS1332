@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -102,7 +104,7 @@ public class ExternalChainingHashMap<K, V> {
     public V put(K key, V value) {
         if (key == null || value == null) { throw new IllegalArgumentException(); }
         if ((size + 1) / ((double) this.table.length) > ExternalChainingHashMap.MAX_LOAD_FACTOR) { resizeBackingTable(2 * this.table.length + 1); }
-        int idx = key.hashCode() % this.table.length;
+        int idx = Math.abs(key.hashCode() % this.table.length);
         if (this.table[idx] == null) {
             this.table[idx] = new ExternalChainingMapEntry<K,V>(key, value);
         } else {
@@ -131,17 +133,23 @@ public class ExternalChainingHashMap<K, V> {
      */
     public V remove(K key) {
         if (key == null) { throw new IllegalArgumentException(); }
-        int idx = key.hashCode() % this.table.length;
+        int idx = Math.abs(key.hashCode() % this.table.length);
         if (this.table[idx] == null) { throw new NoSuchElementException(); }
+        ExternalChainingMapEntry<K,V> p = null;
         ExternalChainingMapEntry<K,V> n = this.table[idx];
-        while (n.getNext().getNext() != null && !n.getKey().equals(key)) {
+        while (n.getNext() != null && !n.getKey().equals(key)) {
+            p = n;
             n = n.getNext();
         }
-        if (n.getKey().equals(key) && n.getNext() == null) {
-            n.setKey());
-
+        if (!n.getKey().equals(key)) { throw new NoSuchElementException(); }
+        V v = n.getValue();
+        if (p == null) {
+            this.table[idx] = null;
+        } else {
+            p.setNext(n.getNext());
         }
-
+        --this.size;
+        return v;
     }
 
     /**
@@ -153,7 +161,14 @@ public class ExternalChainingHashMap<K, V> {
      * @throws java.util.NoSuchElementException   if the key is not in the map
      */
     public V get(K key) {
-
+        if (key == null) { throw new IllegalArgumentException(); }
+        int idx = Math.abs(key.hashCode() % this.table.length);
+        ExternalChainingMapEntry<K,V> n = this.table[idx];
+        while (n != null) {
+            if (n.getKey().equals(key)) { return n.getValue(); }
+            n = n.getNext();
+        }
+        throw new NoSuchElementException();
     }
 
     /**
@@ -165,7 +180,14 @@ public class ExternalChainingHashMap<K, V> {
      * @throws java.lang.IllegalArgumentException if key is null
      */
     public boolean containsKey(K key) {
-
+        if (key == null) { throw new IllegalArgumentException(); }
+        int idx = Math.abs(key.hashCode() % this.table.length);
+        ExternalChainingMapEntry<K,V> n = this.table[idx];
+        while (n != null) {
+            if (n.getKey().equals(key)) { return true; }
+            n = n.getNext();
+        }
+        return false;
     }
 
     /**
@@ -176,7 +198,14 @@ public class ExternalChainingHashMap<K, V> {
      * @return the set of keys in this map
      */
     public Set<K> keySet() {
-
+        HashSet<K> k = new HashSet<K>();
+        for (ExternalChainingMapEntry<K,V> n: this.table) {
+            while (n != null) {
+                k.add(n.getKey());
+                n = n.getNext();
+            }
+        }
+        return k;
     }
 
     /**
@@ -190,7 +219,14 @@ public class ExternalChainingHashMap<K, V> {
      * @return list of values in this map
      */
     public List<V> values() {
-
+        ArrayList<V> l = new ArrayList<V>(this.size);
+        for (ExternalChainingMapEntry<K,V> n: this.table) {
+            while (n != null) {
+                l.add(n.getValue());
+                n = n.getNext();
+            }
+        }
+        return l;
     }
 
     /**
@@ -217,7 +253,14 @@ public class ExternalChainingHashMap<K, V> {
      */
     public void resizeBackingTable(int length) {
         if (length < this.size) { throw new IllegalArgumentException(); }
-
+        ExternalChainingMapEntry<K,V>[] t = new ExternalChainingMapEntry[length];
+        for (ExternalChainingMapEntry<K,V> n: this.table) {
+            if (n != null) {
+                int idx = Math.abs(n.getKey().hashCode() % t.length);
+                t[idx] = n;
+            }
+        }
+        this.table = t;
     }
 
     /**
