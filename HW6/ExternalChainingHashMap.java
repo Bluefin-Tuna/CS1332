@@ -110,9 +110,9 @@ public class ExternalChainingHashMap<K, V> {
         }
         int idx = Math.abs(key.hashCode() % this.table.length);
         if (this.table[idx] == null) {
-            this.table[idx] = new ExternalChainingMapEntry<K,V>(key, value);
+            this.table[idx] = new ExternalChainingMapEntry<K, V>(key, value);
         } else {
-            ExternalChainingMapEntry<K,V> n = this.table[idx];
+            ExternalChainingMapEntry<K, V> n = this.table[idx];
             while (n != null) {
                 if (n.getKey().equals(key)) {
                     V v = n.getValue();
@@ -121,7 +121,7 @@ public class ExternalChainingHashMap<K, V> {
                 }
                 n = n.getNext();
             }
-            this.table[idx] = new ExternalChainingMapEntry<K,V>(key, value, this.table[idx]);
+            this.table[idx] = new ExternalChainingMapEntry<K, V>(key, value, this.table[idx]);
         }
         ++this.size;
         return null;
@@ -137,29 +137,29 @@ public class ExternalChainingHashMap<K, V> {
      */
     public V remove(K key) {
         if (key == null) {
-            throw new IllegalArgumentException("Key can't be null.");
+            throw new IllegalArgumentException("Key can't be null");
         }
-        int idx = Math.abs(key.hashCode() % this.table.length);
-        if (this.table[idx] == null) {
-            throw new NoSuchElementException("Key is not present in HashMap.");
+        int idx = Math.abs(key.hashCode() % table.length);
+        if (table[idx] == null) {
+            throw new NoSuchElementException("Key is not present in HashMap");
         }
-        ExternalChainingMapEntry<K,V> p = null;
-        ExternalChainingMapEntry<K,V> n = this.table[idx];
-        while (n != null && !n.getKey().equals(key)) {
+        ExternalChainingMapEntry<K, V> p = null;
+        ExternalChainingMapEntry<K, V> n = table[idx];
+        while (n.getNext() != null && !n.getKey().equals(key)) {
             p = n;
             n = n.getNext();
         }
-        if (n == null) {
+        if (!n.getKey().equals(key)) {
             throw new NoSuchElementException("Key is not present in HashMap.");
         }
-        V v = n.getValue();
+        V value = n.getValue();
         if (p == null) {
-            this.table[idx] = null;
+            table[idx] = n.getNext();
         } else {
             p.setNext(n.getNext());
         }
         --this.size;
-        return v;
+        return value;
     }
 
     /**
@@ -175,9 +175,11 @@ public class ExternalChainingHashMap<K, V> {
             throw new IllegalArgumentException("Key can't be null.");
         }
         int idx = Math.abs(key.hashCode() % this.table.length);
-        ExternalChainingMapEntry<K,V> n = this.table[idx];
+        ExternalChainingMapEntry<K, V> n = this.table[idx];
         while (n != null) {
-            if (n.getKey().equals(key)) { return n.getValue(); }
+            if (n.getKey().equals(key)) {
+                return n.getValue();
+            }
             n = n.getNext();
         }
         throw new NoSuchElementException("Key is not present in HashMap.");
@@ -196,9 +198,11 @@ public class ExternalChainingHashMap<K, V> {
             throw new IllegalArgumentException("Key can't be null.");
         }
         int idx = Math.abs(key.hashCode() % this.table.length);
-        ExternalChainingMapEntry<K,V> n = this.table[idx];
+        ExternalChainingMapEntry<K, V> n = this.table[idx];
         while (n != null) {
-            if (n.getKey().equals(key)) { return true; }
+            if (n.getKey().equals(key)) {
+                return true;
+            }
             n = n.getNext();
         }
         return false;
@@ -213,7 +217,7 @@ public class ExternalChainingHashMap<K, V> {
      */
     public Set<K> keySet() {
         HashSet<K> k = new HashSet<K>();
-        for (ExternalChainingMapEntry<K,V> n: this.table) {
+        for (ExternalChainingMapEntry<K, V> n: this.table) {
             while (n != null) {
                 k.add(n.getKey());
                 n = n.getNext();
@@ -234,7 +238,7 @@ public class ExternalChainingHashMap<K, V> {
      */
     public List<V> values() {
         ArrayList<V> l = new ArrayList<V>(this.size);
-        for (ExternalChainingMapEntry<K,V> n: this.table) {
+        for (ExternalChainingMapEntry<K, V> n: this.table) {
             while (n != null) {
                 l.add(n.getValue());
                 n = n.getNext();
@@ -269,11 +273,16 @@ public class ExternalChainingHashMap<K, V> {
         if (length < this.size) {
             throw new IllegalArgumentException("Length can't be less than the number of items in the HashMap.");
         }
-        ExternalChainingMapEntry<K,V>[] t = new ExternalChainingMapEntry[length];
-        for (ExternalChainingMapEntry<K,V> n: this.table) {
-            if (n != null) {
+        ExternalChainingMapEntry<K, V>[] t = new ExternalChainingMapEntry[length];
+        for (ExternalChainingMapEntry<K, V> n: this.table) {
+            while (n != null) {
                 int idx = Math.abs(n.getKey().hashCode() % t.length);
-                t[idx] = n;
+                if (t[idx] == null) {
+                    t[idx] = n;
+                } else {
+                    t[idx] = new ExternalChainingMapEntry<K, V>(n.getKey(), n.getValue(), t[idx]);
+                }
+                n = n.getNext();
             }
         }
         this.table = t;
@@ -314,15 +323,5 @@ public class ExternalChainingHashMap<K, V> {
     public int size() {
         // DO NOT MODIFY THIS METHOD!
         return size;
-    }
-
-    public void print() {
-        for (ExternalChainingMapEntry n: this.table) {
-            while (n != null) {
-                System.out.print("(" + n.getKey() + ", " + n.getValue() + "), ");
-                n = n.getNext();
-            }
-            System.out.println();
-        }
     }
 }
