@@ -39,7 +39,9 @@ public class Sorting {
      *                                            null
      */
     public static <T> void selectionSort(T[] arr, Comparator<T> comparator) {
-        if (arr == null || comparator == null) { throw new IllegalArgumentException(); }
+        if (arr == null || comparator == null) {
+            throw new IllegalArgumentException("Argument(s) cannot be null.");
+        }
         for (int i = 0; i < arr.length - 1; ++i) {
             int lv = i;
             for (int j = i + 1; j < arr.length; ++j) {
@@ -51,11 +53,6 @@ public class Sorting {
         }
     }
 
-    private static <T> void swap(T[] a, int i, int j) {
-        T t = a[i];
-        a[i] = a[j];
-        a[j] = t;
-    }
     /**
      * Implement cocktail sort.
      *
@@ -80,7 +77,9 @@ public class Sorting {
      *                                            null
      */
     public static <T> void cocktailSort(T[] arr, Comparator<T> comparator) {
-        if (arr == null || comparator == null) { throw new IllegalArgumentException(); }
+        if (arr == null || comparator == null) {
+            throw new IllegalArgumentException("Argument(s) cannot be null.");
+        }
         boolean s = true;
         int start = 0;
         int end = arr.length - 1;
@@ -94,7 +93,9 @@ public class Sorting {
                     Sorting.swap(arr, i, i + 1);
                 }
             }
-            if (!s) { break; }
+            if (!s) {
+                break;
+            }
             s = false;
             end = ls;
             for (int i = end; i >= start + 1; --i) {
@@ -106,13 +107,6 @@ public class Sorting {
             }
             start = ls;
         }
-    }
-
-    public static <T> void print(T[] arr) {
-        for (T d: arr) {
-            System.out.print(d + " ");
-        }
-        System.out.println();
     }
 
     /**
@@ -145,19 +139,37 @@ public class Sorting {
      *                                            null
      */
     public static <T> void mergeSort(T[] arr, Comparator<T> comparator) {
-        if (arr == null || comparator == null) { throw new IllegalArgumentException(); }
-        if (arr.length <= 1) { return; }
+        if (arr == null || comparator == null) {
+            throw new IllegalArgumentException("Argument(s) cannot be null.");
+        }
+        if (arr.length <= 1) {
+            return;
+        }
         T[] l = (T[]) (new Object[arr.length / 2]);
         T[] r = (T[]) (new Object[arr.length - l.length]);
-        for (int i = 0; i < l.length; ++i) { l[i] = arr[i]; }
-        for (int i = 0; i < r.length; ++i) { r[i] = arr[i + l.length]; }
+        for (int i = 0; i < l.length; ++i) {
+            l[i] = arr[i];
+        }
+        for (int i = 0; i < r.length; ++i) {
+            r[i] = arr[i + l.length];
+        }
         Sorting.mergeSort(l, comparator);
         Sorting.mergeSort(r, comparator);
         Sorting.merge(arr, l, r, comparator);
     }
 
+    /**
+     * Private helper method for mergeSort.
+     *
+     * @param <T> data type to sort
+     * @param a T[] array of data to sort
+     * @param l int representing left bound of subarray
+     * @param r int representing right bound of subarray
+     * @param c Comparator object for comparing two T objects
+     */
     public static <T> void merge(T[] a, T[] l, T[] r, Comparator<T> c) {
-        int i = 0, j = 0;
+        int i = 0;
+        int j = 0;
         for (int k = 0; k < a.length; ++k) {
             if (j >= r.length || (i < l.length && c.compare(l[i], r[j]) <= 0)) {
                 a[k] = l[i++];
@@ -212,11 +224,27 @@ public class Sorting {
      */
     public static <T> T kthSelect(int k, T[] arr, Comparator<T> comparator,
                                   Random rand) {
-        if (arr == null || comparator == null || rand == null) { throw new IllegalArgumentException(); }
-        if (k < 1 || k > arr.length) { throw new IllegalArgumentException(); }
+        if (arr == null || comparator == null || rand == null) {
+            throw new IllegalArgumentException("Argument(s) cannot be null.");
+        }
+        if (k < 1 || k > arr.length) {
+            throw new IllegalArgumentException("k is not a valid index.");
+        }
         return Sorting.kthSelect(k, 0, arr.length, arr, comparator, rand);
     }
 
+    /**
+     * Private helper method for kthSelect public method.
+     *
+     * @param <T> data type to sort
+     * @param k int representing index to retrieve data
+     * @param l int representing left bound for subarray
+     * @param r int representing right bound for subarray
+     * @param a T[] array to sort
+     * @param c Comparator to use when comparing two T objects
+     * @param ra Random object to use when select pivots
+     * @return kth smallest element
+     */
     private static <T> T kthSelect(int k, int l, int r, T[] a, Comparator<T> c, Random ra) {
         int pi = ra.nextInt(r - l) + l;
         T p = a[pi];
@@ -224,9 +252,15 @@ public class Sorting {
         int i = l + 1;
         int j = r - 1;
         while (i <= j) {
-            while (i <= j && c.compare(a[i], p) <= 0) { ++i; }
-            while (i <= j && c.compare(a[j], p) >= 0) { --j; }
-            if (i <= j) { Sorting.swap(a, i++, j--); }
+            while (i <= j && c.compare(a[i], p) <= 0) {
+                ++i;
+            }
+            while (i <= j && c.compare(a[j], p) >= 0) {
+                --j;
+            }
+            if (i <= j) {
+                Sorting.swap(a, i++, j--);
+            }
         }
         Sorting.swap(a, l, j);
         if (j == k - 1) {
@@ -280,8 +314,32 @@ public class Sorting {
      * @throws java.lang.IllegalArgumentException if the array is null
      */
     public static void lsdRadixSort(int[] arr) {
-        if (arr == null) { throw new IllegalArgumentException(); }
-        LinkedList<Integer>[] b = new LinkedList<Integer>[19];
+        if (arr == null) {
+            throw new IllegalArgumentException("Argument(s) cannot be null.");
+        }
+        int mv = arr[0];
+        for (int i: arr) {
+            mv = Math.abs(i) <= mv ? mv : Math.abs(i);
+        }
+        int k = String.format("%d", mv).length();
+        LinkedList<Integer>[] b = new LinkedList[19];
+        for (int i = 0; i < b.length; ++i) {
+            b[i] = new LinkedList<Integer>();
+        }
+        int f = 1;
+        for (int i = 0; i < k; ++i) {
+            for (Integer n : arr) {
+                b[(n / f) % 10 + 9].addLast(n);
+            }
+            int l = 0;
+            for (int j = 0; j < b.length; ++j) {
+                for (Integer n: b[j]) {
+                    arr[l++] = n;
+                }
+                b[j].clear();
+            }
+            f *= 10;
+        }
     }
 
     /**
@@ -314,6 +372,9 @@ public class Sorting {
      * @throws java.lang.IllegalArgumentException if the data is null
      */
     public static int[] heapSort(List<Integer> data) {
+        if (data == null) {
+            throw new IllegalArgumentException("Argument(s) cannot be null.");
+        }
         int[] a = new int[data.size()];
         PriorityQueue<Integer> h = new PriorityQueue<Integer>(data);
         int i = 0;
@@ -321,5 +382,19 @@ public class Sorting {
             a[i++] = h.remove();
         }
         return a;
+    }
+
+    /**
+     * Private helper method for swapping two values in an array.
+     *
+     * @param <T> data type to sort
+     * @param a T[] array of data to sort
+     * @param i int representing the first index to swap
+     * @param j int representing the second index to swap
+     */
+    private static <T> void swap(T[] a, int i, int j) {
+        T t = a[i];
+        a[i] = a[j];
+        a[j] = t;
     }
 }

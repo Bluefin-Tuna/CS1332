@@ -16,6 +16,6 @@ public class Test {
 
         Sorting.cocktailSort(integers, comp);
 
-        Sorting.print(integers);
+        // Sorting.print(integers);
     }
 }
