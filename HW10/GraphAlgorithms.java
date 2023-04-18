@@ -44,13 +44,15 @@ public class GraphAlgorithms {
      *                                  doesn't exist in the graph
      */
     public static <T> List<Vertex<T>> bfs(Vertex<T> start, Graph<T> graph) {
-        if (start == null || graph == null || !graph.getAdjList().containsKey(start)) { throw new IllegalArgumentException(); }
+        if (start == null || graph == null || !graph.getAdjList().containsKey(start)) {
+            throw new IllegalArgumentException("Argument(s) can't be null."); 
+        }
         Queue<Vertex<T>> q = new LinkedList<Vertex<T>>();
         Set<Vertex<T>> v = new HashSet<Vertex<T>>();
         List<Vertex<T>> r = new ArrayList<Vertex<T>>();
         q.add(start);
         v.add(start);
-        while(!q.isEmpty()) {
+        while (!q.isEmpty()) {
             Vertex<T> t = q.remove();
             r.add(t);
             for (VertexDistance<T> d : graph.getAdjList().get(t)) {
@@ -92,13 +94,24 @@ public class GraphAlgorithms {
      *                                  doesn't exist in the graph
      */
     public static <T> List<Vertex<T>> dfs(Vertex<T> start, Graph<T> graph) {
-        if (start == null || graph == null || !graph.getAdjList().containsKey(start)) { throw new IllegalArgumentException(); }
+        if (start == null || graph == null || !graph.getAdjList().containsKey(start)) {
+            throw new IllegalArgumentException("Argument(s) can't be null.");
+        }
         Set<Vertex<T>> v = new HashSet<Vertex<T>>();
         List<Vertex<T>> r = new ArrayList<Vertex<T>>();
         GraphAlgorithms.dfs(start, graph, v, r);
         return r;
     }
 
+    /**
+     * Private helper function for dfs.
+     *
+     * @param <T> the generic typing of the data
+     * @param v the vertex to perform recursion on
+     * @param g the graph to use
+     * @param vs the set of visited vertices
+     * @param r the set holding all vertices found and in which order
+     */
     private static <T> void dfs(Vertex<T> v, Graph<T> g, Set<Vertex<T>> vs, List<Vertex<T>> r) {
         r.add(v);
         vs.add(v);
@@ -143,7 +156,9 @@ public class GraphAlgorithms {
      */
     public static <T> Map<Vertex<T>, Integer> dijkstras(Vertex<T> start,
                                                         Graph<T> graph) {
-        if (start == null || graph == null || !graph.getAdjList().containsKey(start)) { throw new IllegalArgumentException(); }
+        if (start == null || graph == null || !graph.getAdjList().containsKey(start)) {
+            throw new IllegalArgumentException("Argument(s) can't be null.");
+        }
         Queue<VertexDistance<T>> q = new PriorityQueue<VertexDistance<T>>();
         Map<Vertex<T>, Integer> r = new HashMap<Vertex<T>, Integer>();
         for (Vertex<T> v : graph.getAdjList().keySet()) {
@@ -204,10 +219,17 @@ public class GraphAlgorithms {
      *                                  doesn't exist in the graph.
      */
     public static <T> Set<Edge<T>> prims(Vertex<T> start, Graph<T> graph) {
-        if (start == null || graph == null || !graph.getAdjList().containsKey(start)) { throw new IllegalArgumentException(); }
-        PriorityQueue<Edge<T>> q = new PriorityQueue<Edge<T>>(graph.getEdges());
+        if (start == null || graph == null || !graph.getAdjList().containsKey(start)) {
+            throw new IllegalArgumentException("Argument(s) can't be null.");
+        }
+        PriorityQueue<Edge<T>> q = new PriorityQueue<Edge<T>>();
         Set<Vertex<T>> v = new HashSet<Vertex<T>>();
         Set<Edge<T>> r = new HashSet<Edge<T>>();
+        for (Edge<T> e : graph.getEdges()) {
+            if (e.getU().equals(start)) {
+                q.add(e);
+            }
+        }
         v.add(start);
         while (!q.isEmpty()) {
             Edge<T> t = q.remove();
@@ -216,9 +238,7 @@ public class GraphAlgorithms {
                 r.add(new Edge<T>(t.getV(), t.getU(), t.getWeight()));
                 v.add(t.getV());
                 for (Edge<T> e : graph.getEdges()) {
-                    if (e.getV().equals(t.getU())) {
-                        r.add(e);
-                    } else {
+                    if (t.getV().equals(e.getU())) {
                         q.add(e);
                     }
                 }
